@@ -169,7 +169,7 @@
             } catch (Exception $e) {
                 die($e->getMessage());
             }
-        }
+        }//hola mundo xd
 
         # RF03_CU03 - Registrar Rol
         public function create_rol(){
