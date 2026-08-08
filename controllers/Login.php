@@ -1,38 +1,48 @@
-<?php
-    require_once "models/User.php";
-    class Login{
-        // Controlador Principal
-        public function main(){
-            if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-                if (empty($_SESSION['session'])) {
-                    $message = "";
-                    require_once "views/company/login.view.php";
-                } else {
-                    header("Location:?c=Dashboard");
-                }
-            }
-            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                $profile = new User(
-                    $_POST['user_email'],
-                    $_POST['user_pass']
-                );
-                $profile = $profile->login();
-                if ($profile) {
-                    $active = $profile->getUserState();
-                    if ($active != 0) {
-                        $_SESSION['session'] = $profile->getRolName();
-                        $_SESSION['profile'] = serialize($profile);
-                        header("Location:?c=Dashboard");
-                    } else {
-                        $message = "El Usuario NO está activo";
-                        require_once "views/company/login.view.php";
-                    }
-                } else {
-                    $message = "Credenciales incorrectas ó el Usuario NO existe";
-                    require_once "views/company/login.view.php";
-                }
+class Login {
+    // Definición de constante para evitar duplicación del literal (Regla php:S1192)
+    private const VIEW_LOGIN = "views/company/login.view.php";
+
+    public function main() {
+        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+            if (!empty($_SESSION['session'])) {
+                header("Location: ?c=Dashboard");
+                exit;
             }
 
+            $message = "";
+            require_once self::VIEW_LOGIN;
+            return;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Validar que los campos existan en la petición POST
+            $email = $_POST['user_email'] ?? '';
+            $pass  = $_POST['user_pass'] ?? '';
+
+            if (empty($email) || empty($pass)) {
+                $message = "Por favor ingrese todos los campos.";
+                require_once self::VIEW_LOGIN;
+                return;
+            }
+
+            $profile = new User($email, $pass);
+            $user = $profile->login();
+
+            if ($user) {
+                if ($user->getUserState() != 0) {
+                    $_SESSION['session'] = $user->getRolName();
+                    $_SESSION['profile'] = serialize($user);
+                    
+                    header("Location: ?c=Dashboard");
+                    exit;
+                }
+                $message = "El Usuario NO está activo";
+            } else {
+                $message = "Credenciales incorrectas ó el Usuario NO existe";
+            }
+
+            // Renderizado centralizado de la vista en caso de fallo o error de validación
+            require_once self::VIEW_LOGIN;
         }
     }
-?>
+}|
