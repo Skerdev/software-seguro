@@ -29,7 +29,6 @@
 	--color-one: #F5F5F5;
 	--color-two: #24292E;
 	--color-three: #EC5252;
-	/*--color-three: #0366D6;*/
 
 	--form-color: #14111A;
 
@@ -39,7 +38,7 @@
 }
 
 body,html{
-	font-family: 'roboto_condensed_light';
+	font-family:'roboto_condensed_light', sans-serif;
 	width: 100vw;
 	height: 100vh;
 	background-color: var(--color-one);
@@ -168,13 +167,13 @@ table form{
 }
 /*----------  Text Styles  ----------*/
 .roboto-medium{
-	font-family: 'roboto_medium_regular';
+	font-family: 'roboto_medium_regular', sans-serif;
 }
 .roboto-condensed-light{
-	font-family: 'roboto_condensed_light';
+	font-family: 'roboto_condensed_light', sans-serif;
 }
 .roboto-condensed-regular{
-	font-family: 'roboto_condensed_regular';
+	font-family: 'roboto_condensed_regular', sans-serif;
 }
 
 /*----------  login Styles  ----------*/
@@ -185,7 +184,7 @@ table form{
 	justify-content: center;
 	align-items: center;
 	background: #0575E6;
-	background: -webkit-linear-gradient(to right, #021B79, #0575E6);
+	background: -webkit-linear-gradient(left, #021B79, #0575E6);
 	background: linear-gradient(to right, #021B79, #0575E6);
 
 }
@@ -395,7 +394,7 @@ table form{
 	text-transform: uppercase;
 	border-bottom: 1px solid var(--border-color);
 	transition: all .2s ease-in-out;
-	font-family: 'roboto_medium_regular';
+	font-family: 'roboto_medium_regular', sans-serif;
 }
 .tile:hover .tile-tittle{
 	color: #FFF;
@@ -412,7 +411,7 @@ table form{
 	font-size: 80px;
 }
 .tile-icon > p{
-	font-family: 'roboto_medium_regular';
+	font-family: 'roboto_medium_regular', sans-serif;
 	height: 35px;
 	line-height: 35px;
 }
@@ -478,10 +477,6 @@ table form{
 
 
 /*  Bootstrap breakpoints */
-@media (min-width: 576px){
-
-}
-
 @media (min-width: 768px){
 	.nav-lateral.active{
 		transform: translateX(-400px);
@@ -489,14 +484,6 @@ table form{
 	.page-content.active{
 		padding-left: 0;
 	}
-}
-
-@media (min-width: 992px){
-
-}
-
-@media (min-width: 1200px){
-
 }
 
 /*----------  Keyframes  ----------*/
