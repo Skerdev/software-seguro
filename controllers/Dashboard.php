@@ -1,4 +1,4 @@
-<?php
+php
 class Dashboard{
 
     public function main(){
@@ -6,4 +6,3 @@ class Dashboard{
         require_once "views/roles/".$session."/". $session.".view.php";
     }
 }
-?>
