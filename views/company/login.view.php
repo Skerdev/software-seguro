@@ -6,7 +6,7 @@
                     <h1 class="h1">Inicio de Sesión</h1>
                 </div>
             </div>
-            <form class="col-md-9 m-auto" action="" method="post" role="form">
+            <form class="col-md-9 m-auto" action="" method="post">
                 <div class="mb-3">
                     <label for="user_email">Usuario</label>
                     <input type="text" class="form-control mt-1" id="user_email" name="user_email" placeholder="Correo electrónico">
@@ -27,3 +27,5 @@
         </div>
     </div>
     <!-- End Contact -->
+
+

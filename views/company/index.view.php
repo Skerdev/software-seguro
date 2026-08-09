@@ -67,12 +67,12 @@
                 </div>
             </div>
         </div>
-        <a class="carousel-control-prev text-decoration-none w-auto ps-3" href="#template-mo-zay-hero-carousel" role="button" data-bs-slide="prev">
+        <button type="button" class="carousel-control-prev text-decoration-none w-auto ps-3" data-bs-target="#template-mo-zay-hero-carousel" data-bs-slide="prev">
             <i class="fas fa-chevron-left"></i>
-        </a>
-        <a class="carousel-control-next text-decoration-none w-auto pe-3" href="#template-mo-zay-hero-carousel" role="button" data-bs-slide="next">
+        </button>
+        <button type="button" class="carousel-control-next text-decoration-none w-auto pe-3" data-bs-target="#template-mo-zay-hero-carousel" data-bs-slide="next">
             <i class="fas fa-chevron-right"></i>
-        </a>
+        </button>
     </div>
     <!-- End Banner Hero -->
 
@@ -90,17 +90,17 @@
         </div>
         <div class="row">
             <div class="col-12 col-md-4 p-5 mt-3">
-                <a href="#"><img src="./assets/landing/img/category_img_01.jpg" class="rounded-circle img-fluid border"></a>
+                <a href="#"><img src="./assets/landing/img/category_img_01.jpg" class="rounded-circle img-fluid border" alt="Watches category"></a>
                 <h5 class="text-center mt-3 mb-3">Watches</h5>
                 <p class="text-center"><a class="btn btn-success">Go Shop</a></p>
             </div>
             <div class="col-12 col-md-4 p-5 mt-3">
-                <a href="#"><img src="./assets/landing/img/category_img_02.jpg" class="rounded-circle img-fluid border"></a>
+                <a href="#"><img src="./assets/landing/img/category_img_02.jpg" class="rounded-circle img-fluid border" alt="Shoes category"></a>
                 <h2 class="h5 text-center mt-3 mb-3">Shoes</h2>
                 <p class="text-center"><a class="btn btn-success">Go Shop</a></p>
             </div>
             <div class="col-12 col-md-4 p-5 mt-3">
-                <a href="#"><img src="./assets/landing/img/category_img_03.jpg" class="rounded-circle img-fluid border"></a>
+                <a href="#"><img src="./assets/landing/img/category_img_03.jpg" class="rounded-circle img-fluid border" alt="Accessories category"></a>
                 <h2 class="h5 text-center mt-3 mb-3">Accessories</h2>
                 <p class="text-center"><a class="btn btn-success">Go Shop</a></p>
             </div>
