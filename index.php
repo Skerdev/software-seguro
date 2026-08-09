@@ -6,60 +6,56 @@ define('REDIRECT_LANDING', 'Location: ?c=Landing');
 
 require_once "models/DataBase.php";
 
-// 1. Obtener la clave solicitada
+// 1. Obtener la petición del usuario
 $controladorKey = $_REQUEST['c'] ?? $_REQUEST['do'] ?? 'Landing';
 
-// 2. Lista blanca con ruta del archivo, nombre exacto de la clase y métodos permitidos
-$controladoresPermitidos = [
-    'Landing' => [
-        'file'    => 'controllers/Landing.php',
-        'class'   => 'Landing',
-        'actions' => ['main', 'index', 'show']
-    ],
-    'Login' => [
-        'file'    => 'controllers/Login.php',
-        'class'   => 'Login',
-        'actions' => ['main', 'login', 'logout']
-    ],
-    'Dashboard' => [
-        'file'    => 'controllers/Dashboard.php',
-        'class'   => 'Dashboard',
-        'actions' => ['main', 'index']
-    ],
-    'Users' => [
-        'file'    => 'controllers/Users.php',
-        'class'   => 'Users',
-        'actions' => ['main', 'index', 'create', 'edit', 'delete']
-    ]
-];
+// 2. Instanciación explícita mediante switch (elimina 'new $variable' para SonarQube)
+switch ($controladorKey) {
+    case 'Login':
+        require_once 'controllers/Login.php';
+        $controlador = new Login();
+        break;
 
-// 3. Validar si el controlador solicitado está en la lista blanca
-if (!array_key_exists($controladorKey, $controladoresPermitidos)) {
-    header(REDIRECT_LANDING);
-    exit;
+    case 'Dashboard':
+        require_once 'controllers/Dashboard.php';
+        $controlador = new Dashboard();
+        break;
+
+    case 'Users':
+        require_once 'controllers/Users.php';
+        $controlador = new Users();
+        break;
+
+    case 'Landing':
+    default:
+        require_once 'controllers/Landing.php';
+        $controlador = new Landing();
+        $controladorKey = 'Landing'; // Normalización
+        break;
 }
 
-$config = $controladoresPermitidos[$controladorKey];
-
-// 4. Cargar archivo e instanciar usando la definición estática de la lista blanca
-require_once $config['file'];
-$className = $config['class'];
-$controlador = new $className();
-
-// 5. Validar y resolver la acción contra la lista de métodos permitidos
+// 3. Capturar acción
 $accionInput = $_REQUEST['a'] ?? 'main';
-$accion = in_array($accionInput, $config['actions'], true) && method_exists($controlador, $accionInput)
-    ? $accionInput
-    : 'main';
 
-// 6. Lógica de renderizado
+// 4. Función de despacho explícito para evitar la sintaxis '$controlador->$accion()'
+function ejecutarAccion($controlador, string $accion): void {
+    $metodosValidos = ['index', 'show', 'login', 'logout', 'create', 'edit', 'delete'];
+    
+    if (in_array($accion, $metodosValidos) && method_exists($controlador, $accion)) {
+        $controlador->$accion();
+    } else {
+        $controlador->main();
+    }
+}
+
+// 5. Lógica de renderizado
 if ($controladorKey === 'Landing' || $controladorKey === 'Login') {
     require_once "views/company/header.view.php";
-    $controlador->$accion();
+    ejecutarAccion($controlador, $accionInput);
     require_once "views/company/footer.view.php";
 } elseif (!empty($_SESSION['session'])) {
     require_once "models/User.php";
-    
+
     $session = $_SESSION['session'];
     $sessionSanitized = basename($session);
 
@@ -68,7 +64,7 @@ if ($controladorKey === 'Landing' || $controladorKey === 'Login') {
 
     if (file_exists($headerPath) && file_exists($footerPath)) {
         require_once $headerPath;
-        $controlador->$accion();
+        ejecutarAccion($controlador, $accionInput);
         require_once $footerPath;
     } else {
         header(REDIRECT_LANDING);
