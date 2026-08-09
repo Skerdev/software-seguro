@@ -45,4 +45,4 @@ class Login {
             require_once self::VIEW_LOGIN;
         }
     }
-}|
+}

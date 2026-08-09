@@ -2,58 +2,65 @@
 ob_start();
 session_start();
 
-// Definición de la constante para solucionar la regla php:S1192
 define('REDIRECT_LANDING', 'Location: ?c=Landing');
 
 require_once "models/DataBase.php";
 
-// 1. Obtener la petición del usuario
-$controladorInput = $_REQUEST['c'] ?? $_REQUEST['do'] ?? 'Landing';
+// 1. Obtener la clave solicitada
+$controladorKey = $_REQUEST['c'] ?? $_REQUEST['do'] ?? 'Landing';
 
-// 2. Definir una lista blanca (Allowlist) de controladores permitidos y sus archivos
+// 2. Lista blanca con ruta del archivo, nombre exacto de la clase y métodos permitidos
 $controladoresPermitidos = [
-    'Landing'   => 'controllers/Landing.php',
-    'Login'     => 'controllers/Login.php',
-    'Dashboard' => 'controllers/Dashboard.php',
-    'Users'     => 'controllers/Users.php',
-    // Agrega aquí los demás controladores válidos del proyecto
+    'Landing' => [
+        'file'    => 'controllers/Landing.php',
+        'class'   => 'Landing',
+        'actions' => ['main', 'index', 'show']
+    ],
+    'Login' => [
+        'file'    => 'controllers/Login.php',
+        'class'   => 'Login',
+        'actions' => ['main', 'login', 'logout']
+    ],
+    'Dashboard' => [
+        'file'    => 'controllers/Dashboard.php',
+        'class'   => 'Dashboard',
+        'actions' => ['main', 'index']
+    ],
+    'Users' => [
+        'file'    => 'controllers/Users.php',
+        'class'   => 'Users',
+        'actions' => ['main', 'index', 'create', 'edit', 'delete']
+    ]
 ];
 
 // 3. Validar si el controlador solicitado está en la lista blanca
-if (!array_key_exists($controladorInput, $controladoresPermitidos)) {
-    // Si no está permitido o no existe, redirigir al controlador por defecto
+if (!array_key_exists($controladorKey, $controladoresPermitidos)) {
     header(REDIRECT_LANDING);
     exit;
 }
 
-// 4. Cargar el archivo de manera segura desde la lista blanca (sin datos directos de $_REQUEST)
-$route_controller = $controladoresPermitidos[$controladorInput];
-require_once $route_controller;
+$config = $controladoresPermitidos[$controladorKey];
 
-// 5. Instanciar el controlador seguro
-$controlador = new $controladorInput();
+// 4. Cargar archivo e instanciar usando la definición estática de la lista blanca
+require_once $config['file'];
+$className = $config['class'];
+$controlador = new $className();
 
-// 6. Validar la acción enviada por el usuario
-$accion = $_REQUEST['a'] ?? 'main';
+// 5. Validar y resolver la acción contra la lista de métodos permitidos
+$accionInput = $_REQUEST['a'] ?? 'main';
+$accion = in_array($accionInput, $config['actions'], true) && method_exists($controlador, $accionInput)
+    ? $accionInput
+    : 'main';
 
-// Opcional: Validar que el método exista en la clase para evitar Fatal Errors
-if (!method_exists($controlador, $accion)) {
-    $accion = 'main';
-}
-
-// 7. Lógica de renderizado según vistas y sesión
-$vista = $controladorInput;
-
-if ($vista === 'Landing' || $vista === 'Login') {
+// 6. Lógica de renderizado
+if ($controladorKey === 'Landing' || $controladorKey === 'Login') {
     require_once "views/company/header.view.php";
-    call_user_func([$controlador, $accion]);
+    $controlador->$accion();
     require_once "views/company/footer.view.php";
 } elseif (!empty($_SESSION['session'])) {
     require_once "models/User.php";
-    $perfil = unserialize($_SESSION['profile']);
+    
     $session = $_SESSION['session'];
-
-    // Sanitización básica del rol para evitar saltos en directorios de vistas
     $sessionSanitized = basename($session);
 
     $headerPath = "views/roles/" . $sessionSanitized . "/header.view.php";
@@ -61,7 +68,7 @@ if ($vista === 'Landing' || $vista === 'Login') {
 
     if (file_exists($headerPath) && file_exists($footerPath)) {
         require_once $headerPath;
-        call_user_func([$controlador, $accion]);
+        $controlador->$accion();
         require_once $footerPath;
     } else {
         header(REDIRECT_LANDING);
