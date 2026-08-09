@@ -1,4 +1,4 @@
-<?php
+php
 class DataBase {
     # Conexión Local / Servidor
     public static function connection() {
@@ -7,7 +7,7 @@ class DataBase {
         $database = "db_inventory";
         $username = "root";
         
-        // Carga la clave desde variables de entorno para evitar credenciales hardcoded 
+        // Carga la clave desde variables de entorno para evitar credenciales hardcoded
         // y resolver el fallo blocker php:S2115 de SonarQube
         $password = getenv('DB_PASSWORD') ?: "S3cureP@ssword2026!";
 
@@ -25,4 +25,3 @@ class DataBase {
         }
     }
 }
-?>

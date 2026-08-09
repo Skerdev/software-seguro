@@ -1,4 +1,4 @@
-<?php
+php
 ob_start();
 session_start();
 
@@ -70,4 +70,3 @@ if ($vista === 'Landing' || $vista === 'Login') {
 }
 
 ob_end_flush();
-?>
