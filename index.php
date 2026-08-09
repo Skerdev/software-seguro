@@ -1,6 +1,9 @@
-php
+<?php
 ob_start();
 session_start();
+
+// Definición de la constante para solucionar la regla php:S1192
+define('REDIRECT_LANDING', 'Location: ?c=Landing');
 
 require_once "models/DataBase.php";
 
@@ -19,7 +22,7 @@ $controladoresPermitidos = [
 // 3. Validar si el controlador solicitado está en la lista blanca
 if (!array_key_exists($controladorInput, $controladoresPermitidos)) {
     // Si no está permitido o no existe, redirigir al controlador por defecto
-    header("Location: ?c=Landing");
+    header(REDIRECT_LANDING);
     exit;
 }
 
@@ -61,11 +64,11 @@ if ($vista === 'Landing' || $vista === 'Login') {
         call_user_func([$controlador, $accion]);
         require_once $footerPath;
     } else {
-        header("Location: ?c=Landing");
+        header(REDIRECT_LANDING);
         exit;
     }
 } else {
-    header("Location: ?c=Landing");
+    header(REDIRECT_LANDING);
     exit;
 }
 
