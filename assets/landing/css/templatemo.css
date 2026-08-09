@@ -65,7 +65,7 @@ body, ul, li, p, a, label, input, div {
 .pagination .page-link:hover {color: #000;}
 .pagination .page-link:hover, .pagination .page-link.active {
   background-color: #69bb7e;
-  color: #fff;
+  color: #212934 !important;
 }
 /* Nav */
 #templatemo_nav_top { min-height: 40px;}
@@ -188,4 +188,7 @@ body, ul, li, p, a, label, input, div {
 }
 
 /* Extra large devices (large desktops, 1200px and up)*/
-@media (min-width: 1200px) {}
+@media (min-width: 1200px) {
+  #templatemo_main_nav .navbar-nav {max-width: 650px;}
+  #template-mo-zay-hero-carousel .carousel-item {min-height: 40rem !important;}
+}

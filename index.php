@@ -4,31 +4,37 @@ session_start();
 
 define('REDIRECT_LANDING', 'Location: ?c=Landing');
 
-require_once "models/DataBase.php";
+// REGISTRO DEL AUTOLOADER (Reemplaza los require_once de clases/modelos/controladores)
+spl_autoload_register(function ($class) {
+    $paths = ['models/', 'controllers/'];
+    foreach ($paths as $path) {
+        $file = __DIR__ . '/' . $path . $class . '.php';
+        if (file_exists($file)) {
+            require_once $file;
+            break;
+        }
+    }
+});
 
 // 1. Obtener la petición del usuario
 $controladorKey = $_REQUEST['c'] ?? $_REQUEST['do'] ?? 'Landing';
 
-// 2. Instanciación explícita mediante switch (elimina 'new $variable' para SonarQube)
+// 2. Instanciación explícita mediante switch
 switch ($controladorKey) {
     case 'Login':
-        require_once 'controllers/Login.php';
         $controlador = new Login();
         break;
 
     case 'Dashboard':
-        require_once 'controllers/Dashboard.php';
         $controlador = new Dashboard();
         break;
 
     case 'Users':
-        require_once 'controllers/Users.php';
         $controlador = new Users();
         break;
 
     case 'Landing':
     default:
-        require_once 'controllers/Landing.php';
         $controlador = new Landing();
         $controladorKey = 'Landing'; // Normalización
         break;
@@ -37,7 +43,7 @@ switch ($controladorKey) {
 // 3. Capturar acción
 $accionInput = $_REQUEST['a'] ?? 'main';
 
-// 4. Función de despacho explícito para evitar la sintaxis '$controlador->$accion()'
+// 4. Función de despacho explícito
 function ejecutarAccion($controlador, string $accion): void {
     $metodosValidos = ['index', 'show', 'login', 'logout', 'create', 'edit', 'delete'];
     
@@ -54,8 +60,6 @@ if ($controladorKey === 'Landing' || $controladorKey === 'Login') {
     ejecutarAccion($controlador, $accionInput);
     require_once "views/company/footer.view.php";
 } elseif (!empty($_SESSION['session'])) {
-    require_once "models/User.php";
-
     $session = $_SESSION['session'];
     $sessionSanitized = basename($session);
 
