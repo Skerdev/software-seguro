@@ -6,6 +6,7 @@
 
             </div>
 
+
             <div class="container-fluid">
                 <ul class="full-box list-unstyled page-nav-tabs">
                     <li>
@@ -101,13 +102,4 @@
                         <button type="submit" class="btn btn-raised btn-info btn-sm"><i class="far fa-save"></i> &nbsp; ENVIAR</button>
                     </p>
                 </form>
-            </div>
-
-    
-            
-
-
-
-
-
-            
+            </div >
