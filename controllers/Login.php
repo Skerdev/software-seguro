@@ -1,3 +1,4 @@
+<?php
 class Login {
     // Definición de constante para evitar duplicación del literal (Regla php:S1192)
     private const VIEW_LOGIN = "views/company/login.view.php";

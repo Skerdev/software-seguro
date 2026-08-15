@@ -1,4 +1,4 @@
-php
+<?php
 class Dashboard{
 
     public function main(){
