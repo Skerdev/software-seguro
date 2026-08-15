@@ -168,6 +168,10 @@ class User
         }
         return null;
     }
+    public function getUserState()
+    {
+        return $this->userState;
+    }
 
     # RF01_CU01 - Iniciar Sesión
     public function login()

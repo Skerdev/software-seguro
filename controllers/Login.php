@@ -26,8 +26,12 @@ class Login {
                 return;
             }
 
-            $profile = new User($email, $pass);
-            $user = $profile->login();
+            $profile = new User([
+                'userEmail' => $email,
+                'userPass' => $pass
+            ]);
+
+$user = $profile->login();
 
             if ($user) {
                 if ($user->getUserState() != 0) {
