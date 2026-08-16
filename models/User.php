@@ -133,6 +133,7 @@ class User
     private $userEmail;
     private $userPass;
     private $userState;
+    private $rolName;
 
     public function __construct(array $data = [])
     {
@@ -147,6 +148,7 @@ class User
                 $this->userEmail = $data['userEmail'] ?? $data['user_email'] ?? null;
                 $this->userPass = $data['userPass'] ?? $data['user_pass'] ?? null;
                 $this->userState = $data['userState'] ?? $data['user_state'] ?? null;
+                $this->rolName = $data['rolName'] ?? $data['rol_name'] ?? null;
             }
         } catch (Exception $e) {
             die($e->getMessage());
@@ -154,12 +156,35 @@ class User
     }
 
     // Generic property accessors to reduce method count
-    public function __set($name, $value)
+// Excluye $dbh (PDO) de la serialización: PDO no es serializable
+    public function __sleep()
     {
-        if (property_exists($this, $name)) {
-            $this->$name = $value;
-        }
+        return [
+            'rolCode',
+            'userCode',
+            'userName',
+            'userLastname',
+            'userId',
+            'userEmail',
+            'userPass',
+            'userState',
+            'rolName',
+        ];
     }
+
+        // Reconstruye la conexión al deserializar (p. ej. al leer $_SESSION['profile'])
+        public function __wakeup()
+        {
+            $this->dbh = DataBase::connection();
+        }
+
+        // Generic property accessors to reduce method count
+        public function __set($name, $value)
+        {
+            if (property_exists($this, $name)) {
+                $this->$name = $value;
+            }
+        }
 
     public function __get($name)
     {
@@ -171,6 +196,10 @@ class User
     public function getUserState()
     {
         return $this->userState;
+    }
+    public function getRolName()
+    {
+        return $this->rolName;
     }
 
     # RF01_CU01 - Iniciar Sesión

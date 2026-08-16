@@ -16,7 +16,6 @@ class Login {
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Validar que los campos existan en la petición POST
             $email = $_POST['user_email'] ?? '';
             $pass  = $_POST['user_pass'] ?? '';
 
@@ -31,7 +30,7 @@ class Login {
                 'userPass' => $pass
             ]);
 
-$user = $profile->login();
+            $user = $profile->login();
 
             if ($user) {
                 if ($user->getUserState() != 0) {
@@ -46,7 +45,6 @@ $user = $profile->login();
                 $message = "Credenciales incorrectas ó el Usuario NO existe";
             }
 
-            // Renderizado centralizado de la vista en caso de fallo o error de validación
             require_once self::VIEW_LOGIN;
         }
     }
