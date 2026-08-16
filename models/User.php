@@ -201,6 +201,30 @@ class User
     {
         return $this->rolName;
     }
+    public function getRolCode()
+    {
+        return $this->rolCode;
+    }
+    public function getUserCode()
+    {
+        return $this->userCode;
+    }
+    public function getUserName()
+    {
+        return $this->userName;
+    }
+    public function getUserLastName()
+    {
+        return $this->userLastname;
+    }
+    public function getUserId()
+    {
+        return $this->userId;
+    }
+    public function getUserEmail()
+    {
+        return $this->userEmail;
+    }
 
     # RF01_CU01 - Iniciar Sesión
     public function login()
