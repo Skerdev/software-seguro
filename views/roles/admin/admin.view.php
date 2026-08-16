@@ -1,4 +1,7 @@
-            <!-- Page header -->
+<?php
+    $session = $_SESSION['rolName'] ?? 'Invitado';
+    $sessionSanitized = strtolower($session);
+<!-- Page header -->
             <div class="full-box page-header">
                 <h3 class="text-left">
                     <i class="fab fa-dashcube fa-fw"></i> &nbsp; <?php echo strtoupper($session) ?>

@@ -67,6 +67,16 @@ if ($controladorKey === 'Landing' || $controladorKey === 'Login') {
     $footerPath = "views/roles/" . $sessionSanitized . "/footer.view.php";
 
     if (file_exists($headerPath) && file_exists($footerPath)) {
+        $profile = isset($_SESSION['profile'])
+            ? unserialize($_SESSION['profile'], ['allowed_classes' => [User::class]])
+            : false;
+
+        if ($profile === false) {
+            session_unset();
+            session_destroy();
+            header(REDIRECT_LANDING);
+            exit;
+        }
         require_once $headerPath;
         ejecutarAccion($controlador, $accionInput);
         require_once $footerPath;
