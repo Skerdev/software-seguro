@@ -1,172 +1,350 @@
 <?php
-require_once "models/User.php";
 
-class Users {
+class Users
+{
     private $session;
 
-    // Constantes para resolver issues php:S1192 (Duplicación de literales)
-    private const REDIRECT_DASHBOARD = "Location: ?c=Dashboard";
-    private const REDIRECT_ROL_READ  = "Location: ?c=Users&a=rolRead";
-    private const REDIRECT_USER_READ = "Location: ?c=Users&a=userRead";
+    private const ROLE_ADMIN = 'admin';
+    private const ROLE_SELLER = 'seller';
 
-    public function __construct() {
+    private const REDIRECT_DASHBOARD = 'Location: ?c=Dashboard';
+    private const REDIRECT_ROLE_READ = 'Location: ?c=Users&a=rolRead';
+    private const REDIRECT_USER_READ = 'Location: ?c=Users&a=userRead';
+
+    public function __construct()
+    {
         $this->session = $_SESSION['session'] ?? null;
     }
 
-    // Controlador Principal
-    public function main() {
+    /**
+     * Verifica si el usuario tiene uno de los roles permitidos.
+     */
+    private function hasRole(array $roles): bool
+    {
+        return in_array($this->session, $roles, true);
+    }
+
+    /**
+     * Redirige al dashboard y finaliza la ejecución.
+     */
+    private function redirectDashboard(): void
+    {
         header(self::REDIRECT_DASHBOARD);
         exit;
     }
 
-    // Controlador Crear Rol
-    public function rolCreate() {
-        if ($this->session == 'admin') {
-            if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-                require_once "views/modules/users/rol_create.view.php";
+    /**
+     * Controlador principal.
+     */
+    public function main(): void
+    {
+        $this->redirectDashboard();
+    }
+
+    /**
+     * Crear Rol
+     * Solo administrador.
+     */
+    public function rolCreate(): void
+    {
+        if (!$this->hasRole([self::ROLE_ADMIN])) {
+            $this->redirectDashboard();
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+            require_once 'views/modules/users/rol_create.view.php';
+            return;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+            $rolName = trim($_POST['rol_name'] ?? '');
+
+            if ($rolName === '') {
+                $message = 'El nombre del rol es obligatorio.';
+                require_once 'views/modules/users/rol_create.view.php';
+                return;
             }
-            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                $rol = new User;
-                $rol->setRolName($_POST['rol_name'] ?? '');
-                $rol->create_rol();
-                header(self::REDIRECT_ROL_READ);
+
+            $rol = new Rol([
+                'rolName' => $rolName
+            ]);
+
+            $rol->create();
+
+            header(self::REDIRECT_ROLE_READ);
+            exit;
+        }
+
+        $this->redirectDashboard();
+    }
+
+    /**
+     * Consultar Roles
+     * Solo administrador.
+     */
+    public function rolRead(): void
+    {
+        if (!$this->hasRole([self::ROLE_ADMIN])) {
+            $this->redirectDashboard();
+        }
+
+        $rolModel = new Rol();
+        $roles = $rolModel->readAll();
+
+        require_once 'views/modules/users/rol_read.view.php';
+    }
+
+    /**
+     * Actualizar Rol
+     * Solo administrador.
+     */
+    public function rolUpdate(): void
+    {
+        if (!$this->hasRole([self::ROLE_ADMIN])) {
+            $this->redirectDashboard();
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+
+            $rolCode = $_GET['idRol'] ?? '';
+
+            if ($rolCode === '') {
+                header(self::REDIRECT_ROLE_READ);
                 exit;
             }
-        } else {
-            header(self::REDIRECT_DASHBOARD);
-            exit;
-        }
-    }
 
-    // Controlador Consultar Roles
-    public function rolRead() {
-        if ($this->session == 'admin') {
-            $roles = new User;
-            $roles = $roles->read_roles();
-            require_once "views/modules/users/rol_read.view.php";
-        } else {
-            header(self::REDIRECT_DASHBOARD);
-            exit;
-        }
-    }
+            $rolModel = new Rol();
+            $rolId = $rolModel->getByCode($rolCode);
 
-    // Controlador Actualizar Rol
-    public function rolUpdate() {
-        if ($this->session == 'admin') {
-            if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-                $rolId = new User;
-                $rolId = $rolId->getrol_bycode($_GET['idRol'] ?? '');
-                require_once "views/modules/users/rol_update.view.php";
-            }
-            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                $rolUpdate = new User;
-                $rolUpdate->setRolCode($_POST['rol_code'] ?? '');
-                $rolUpdate->setRolName($_POST['rol_name'] ?? '');
-                $rolUpdate->update_rol();
-                header(self::REDIRECT_ROL_READ);
+            if (!$rolId) {
+                header(self::REDIRECT_ROLE_READ);
                 exit;
             }
-        } else {
-            header(self::REDIRECT_DASHBOARD);
-            exit;
-        }
-    }
 
-    // Controlador Eliminar Rol
-    public function rolDelete() {
-        if ($this->session == 'admin') {
-            $rol = new User;
-            $rol->delete_rol($_GET['idRol'] ?? '');
-            header(self::REDIRECT_ROL_READ);
-            exit;
-        } else {
-            header(self::REDIRECT_DASHBOARD);
-            exit;
+            require_once 'views/modules/users/rol_update.view.php';
+            return;
         }
-    }
 
-    // Controlador Crear Usuario
-    public function userCreate() {
-        if ($this->session == 'admin' || $this->session == 'seller') {
-            if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-                $roles = new User;
-                $roles = $roles->read_roles();
-                require_once "views/modules/users/user_create.view.php";
-            }
-            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                $user = new User(
-                    $_POST['rol_code'] ?? '',
-                    null,
-                    $_POST['user_name'] ?? '',
-                    $_POST['user_lastname'] ?? '',
-                    $_POST['user_id'] ?? '',
-                    $_POST['user_email'] ?? '',
-                    $_POST['user_pass'] ?? '',
-                    $_POST['user_state'] ?? ''
-                );
-                $user->create_user();
-                header(self::REDIRECT_USER_READ);
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+            $rolCode = trim($_POST['rol_code'] ?? '');
+            $rolName = trim($_POST['rol_name'] ?? '');
+
+            if ($rolCode === '' || $rolName === '') {
+                header(self::REDIRECT_ROLE_READ);
                 exit;
             }
-        } else {
-            header(self::REDIRECT_DASHBOARD);
+
+            $rolUpdate = new Rol([
+                'rolCode' => $rolCode,
+                'rolName' => $rolName
+            ]);
+
+            $rolUpdate->update();
+
+            header(self::REDIRECT_ROLE_READ);
             exit;
         }
+
+        $this->redirectDashboard();
     }
 
-    // Controlador Consultar Usuarios
-    public function userRead() {
-        if ($this->session == 'admin' || $this->session == 'seller') {
-            $users = new User;
-            $users = $users->read_users();
-            require_once "views/modules/users/user_read.view.php";
-        } else {
-            header(self::REDIRECT_DASHBOARD);
-            exit;
+    /**
+     * Eliminar Rol
+     * Solo administrador.
+     */
+    public function rolDelete(): void
+    {
+        if (!$this->hasRole([self::ROLE_ADMIN])) {
+            $this->redirectDashboard();
         }
+
+        $rolCode = $_GET['idRol'] ?? '';
+
+        if ($rolCode !== '') {
+            $rol = new Rol();
+            $rol->delete($rolCode);
+        }
+
+        header(self::REDIRECT_ROLE_READ);
+        exit;
     }
 
-    // Controlador Actualizar Usuario
-    public function userUpdate() {
-        if ($this->session == 'admin' || $this->session == 'seller') {
-            if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-                $roles = new User;
-                $roles = $roles->read_roles();
-                $user = new User;
-                $user = $user->getuser_bycode($_GET['idUser'] ?? '');
-                require_once "views/modules/users/user_update.view.php";
+    /**
+     * Crear Usuario
+     * Administrador y vendedor.
+     */
+    public function userCreate(): void
+    {
+        if (!$this->hasRole([self::ROLE_ADMIN, self::ROLE_SELLER])) {
+            $this->redirectDashboard();
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+
+            $rolModel = new Rol();
+            $roles = $rolModel->readAll();
+
+            require_once 'views/modules/users/user_create.view.php';
+            return;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+            $password = $_POST['user_pass'] ?? '';
+            $passwordConfirmation = $_POST['user_pass_conf'] ?? '';
+
+            if ($password === '' || $password !== $passwordConfirmation) {
+                $rolModel = new Rol();
+                $roles = $rolModel->readAll();
+
+                $message = 'Las contraseñas no coinciden o están vacías.';
+
+                require_once 'views/modules/users/user_create.view.php';
+                return;
             }
-            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                $userUpdate = new User(
-                    $_POST['rol_code'] ?? '',
-                    $_POST['user_code'] ?? '',
-                    $_POST['user_name'] ?? '',
-                    $_POST['user_lastname'] ?? '',
-                    $_POST['user_id'] ?? '',
-                    $_POST['user_email'] ?? '',
-                    $_POST['user_pass'] ?? '',
-                    $_POST['user_state'] ?? ''
-                );
-                $userUpdate->update_user();
-                header(self::REDIRECT_USER_READ);
-                exit;
-            }
-        } else {
-            header(self::REDIRECT_DASHBOARD);
-            exit;
-        }
-    }
 
-    // Controlador Eliminar Usuario
-    public function userDelete() {
-        if ($this->session == 'admin') {
-            $user = new User;
-            $user->delete_user($_GET['idUser'] ?? '');
+            $user = new User([
+                'rolCode' => $_POST['rol_code'] ?? '',
+                'userName' => trim($_POST['user_name'] ?? ''),
+                'userLastname' => trim($_POST['user_lastname'] ?? ''),
+                'userId' => trim($_POST['user_id'] ?? ''),
+                'userEmail' => trim($_POST['user_email'] ?? ''),
+                'userPass' => $password,
+                'userState' => $_POST['user_state'] ?? ''
+            ]);
+
+            $user->create();
+
             header(self::REDIRECT_USER_READ);
             exit;
-        } else {
-            header(self::REDIRECT_DASHBOARD);
+        }
+
+        $this->redirectDashboard();
+    }
+
+    /**
+     * Consultar Usuarios
+     * Administrador y vendedor.
+     */
+    public function userRead(): void
+    {
+        if (!$this->hasRole([self::ROLE_ADMIN, self::ROLE_SELLER])) {
+            $this->redirectDashboard();
+        }
+
+        $userModel = new User();
+        $users = $userModel->readAll();
+
+        require_once 'views/modules/users/user_read.view.php';
+    }
+
+    /**
+     * Actualizar Usuario
+     * Administrador y vendedor.
+     */
+    public function userUpdate(): void
+    {
+        if (!$this->hasRole([self::ROLE_ADMIN, self::ROLE_SELLER])) {
+            $this->redirectDashboard();
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+
+            $userCode = $_GET['idUser'] ?? '';
+
+            if ($userCode === '') {
+                header(self::REDIRECT_USER_READ);
+                exit;
+            }
+
+            $rolModel = new Rol();
+            $roles = $rolModel->readAll();
+
+            $userModel = new User();
+            $user = $userModel->getByCode($userCode);
+
+            if (!$user) {
+                header(self::REDIRECT_USER_READ);
+                exit;
+            }
+
+            $state = [
+                0 => 'Inactivo',
+                1 => 'Activo'
+            ];
+
+            require_once 'views/modules/users/user_update.view.php';
+            return;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+            $userCode = trim($_POST['user_code'] ?? '');
+
+            if ($userCode === '') {
+                header(self::REDIRECT_USER_READ);
+                exit;
+            }
+
+            $userModel = new User();
+
+            /*
+             * Si el campo de contraseña viene vacío,
+             * conservamos la contraseña actual.
+             */
+            $currentUser = $userModel->getByCode($userCode);
+
+            if (!$currentUser) {
+                header(self::REDIRECT_USER_READ);
+                exit;
+            }
+
+            $password = $_POST['user_pass'] ?? '';
+
+            if ($password === '') {
+                $password = $currentUser->getUserPassword();
+            }
+
+            $userUpdate = new User([
+                'rolCode' => $_POST['rol_code'] ?? '',
+                'userCode' => $userCode,
+                'userName' => trim($_POST['user_name'] ?? ''),
+                'userLastname' => trim($_POST['user_lastname'] ?? ''),
+                'userId' => trim($_POST['user_id'] ?? ''),
+                'userEmail' => trim($_POST['user_email'] ?? ''),
+                'userPass' => $password,
+                'userState' => $_POST['user_state'] ?? ''
+            ]);
+
+            $userUpdate->update();
+
+            header(self::REDIRECT_USER_READ);
             exit;
         }
+
+        $this->redirectDashboard();
+    }
+
+    /**
+     * Eliminar Usuario
+     * Solo administrador.
+     */
+    public function userDelete(): void
+    {
+        if (!$this->hasRole([self::ROLE_ADMIN])) {
+            $this->redirectDashboard();
+        }
+
+        $userCode = $_GET['idUser'] ?? '';
+
+        if ($userCode !== '') {
+            $user = new User();
+            $user->delete($userCode);
+        }
+
+        header(self::REDIRECT_USER_READ);
+        exit;
     }
 }
