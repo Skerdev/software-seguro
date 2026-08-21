@@ -30,13 +30,15 @@ function resetTestDatabase() {
         $pdo->exec("DELETE FROM ROLES");
         
         // Insertar datos de prueba iniciales
-        $pdo->exec("INSERT INTO ROLES VALUES ('R001', 'admin')");
-        $pdo->exec("INSERT INTO ROLES VALUES ('R002', 'seller')");
-        $pdo->exec("INSERT INTO ROLES VALUES ('R003', 'customer')");
-        
-        $pdo->exec("INSERT INTO USERS VALUES ('R001', 'U001', 'Admin', 'Sistema', '12345', 'admin@test.com', '" . hash('sha256', 'admin123') . "', 1)");
-        $pdo->exec("INSERT INTO USERS VALUES ('R002', 'U002', 'Vendedor', 'Prueba', '67890', 'seller@test.com', '" . hash('sha256', 'seller123') . "', 1)");
-        $pdo->exec("INSERT INTO USERS VALUES ('R003', 'U003', 'Cliente', 'Test', '11111', 'customer@test.com', '" . hash('sha256', 'customer123') . "', 1)");
+        // Nota: rol_code y user_code son INT AUTO_INCREMENT en el esquema real,
+        // por eso se usan enteros explícitos (1, 2, 3) y no códigos tipo 'R001'.
+        $pdo->exec("INSERT INTO ROLES (rol_code, rol_name) VALUES (1, 'admin')");
+        $pdo->exec("INSERT INTO ROLES (rol_code, rol_name) VALUES (2, 'seller')");
+        $pdo->exec("INSERT INTO ROLES (rol_code, rol_name) VALUES (3, 'customer')");
+
+        $pdo->exec("INSERT INTO USERS (rol_code, user_code, user_name, user_lastname, user_id, user_email, user_pass, user_state) VALUES (1, 1, 'Admin', 'Sistema', '12345', 'admin@test.com', '" . hash('sha256', 'admin123') . "', 1)");
+        $pdo->exec("INSERT INTO USERS (rol_code, user_code, user_name, user_lastname, user_id, user_email, user_pass, user_state) VALUES (2, 2, 'Vendedor', 'Prueba', '67890', 'seller@test.com', '" . hash('sha256', 'seller123') . "', 1)");
+        $pdo->exec("INSERT INTO USERS (rol_code, user_code, user_name, user_lastname, user_id, user_email, user_pass, user_state) VALUES (3, 3, 'Cliente', 'Test', '11111', 'customer@test.com', '" . hash('sha256', 'customer123') . "', 1)");
         return true;
     } catch (Exception $e) {
         echo "Error al resetear la base de datos: " . $e->getMessage();

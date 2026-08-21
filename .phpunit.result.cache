@@ -1,1 +1,1 @@
-{"version":1,"defects":{"ExampleTest::testBasicAssertions":3,"ExampleTest::testResetDatabase":3},"times":{"ExampleTest::testDatabaseConnection":0.073,"ExampleTest::testBasicAssertions":0.007,"ExampleTest::testResetDatabase":0.174}}
+{"version":1,"defects":{"ExampleTest::testBasicAssertions":3,"ExampleTest::testResetDatabase":3},"times":{"ExampleTest::testDatabaseConnection":0.515,"ExampleTest::testBasicAssertions":0.238,"ExampleTest::testResetDatabase":0.073}}
