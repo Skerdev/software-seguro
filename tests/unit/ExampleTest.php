@@ -15,8 +15,8 @@ class ExampleTest extends TestCase
         // Verifica aserciones básicas y manipulación simulada de sesión
         $this->assertTrue(true);
         $this->assertEquals(2, 1 + 1);
-        $this->assertNotEmpty($_SESSION);
         $_SESSION['test'] = 'ok';
+        $this->assertNotEmpty($_SESSION);
         $this->assertEquals('ok', $_SESSION['test']);
     }
 
@@ -31,3 +31,4 @@ class ExampleTest extends TestCase
         $this->assertEquals(3, $count);
     }
 }
+
