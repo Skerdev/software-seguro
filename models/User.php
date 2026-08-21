@@ -226,6 +226,44 @@ class User
         return $this->userEmail;
     }
 
+    // Setters requeridos por tests/TestCase.php (createTestUser, loginAs)
+    public function setRolCode($rolCode)
+    {
+        $this->rolCode = $rolCode;
+    }
+    public function setRolName($rolName)
+    {
+        $this->rolName = $rolName;
+    }
+    public function setUserCode($userCode)
+    {
+        $this->userCode = $userCode;
+    }
+    public function setUserName($userName)
+    {
+        $this->userName = $userName;
+    }
+    public function setUserLastName($userLastname)
+    {
+        $this->userLastname = $userLastname;
+    }
+    public function setUserId($userId)
+    {
+        $this->userId = $userId;
+    }
+    public function setUserEmail($userEmail)
+    {
+        $this->userEmail = $userEmail;
+    }
+    public function setUserPass($userPass)
+    {
+        $this->userPass = $userPass;
+    }
+    public function setUserState($userState)
+    {
+        $this->userState = $userState;
+    }
+
     # RF01_CU01 - Iniciar Sesión
     public function login()
     {

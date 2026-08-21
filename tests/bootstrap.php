@@ -34,12 +34,13 @@ function resetTestDatabase() {
         $pdo->exec("INSERT INTO ROLES VALUES ('R002', 'seller')");
         $pdo->exec("INSERT INTO ROLES VALUES ('R003', 'customer')");
         
-        $pdo->exec("INSERT INTO USERS VALUES ('R001', 'U001', 'Admin', 'Sistema', '12345', 'admin@test.com', '" . sha1('admin123') . "', 1)");
-        $pdo->exec("INSERT INTO USERS VALUES ('R002', 'U002', 'Vendedor', 'Prueba', '67890', 'seller@test.com', '" . sha1('seller123') . "', 1)");
-        $pdo->exec("INSERT INTO USERS VALUES ('R003', 'U003', 'Cliente', 'Test', '11111', 'customer@test.com', '" . sha1('customer123') . "', 1)");
+        $pdo->exec("INSERT INTO USERS VALUES ('R001', 'U001', 'Admin', 'Sistema', '12345', 'admin@test.com', '" . hash('sha256', 'admin123') . "', 1)");
+        $pdo->exec("INSERT INTO USERS VALUES ('R002', 'U002', 'Vendedor', 'Prueba', '67890', 'seller@test.com', '" . hash('sha256', 'seller123') . "', 1)");
+        $pdo->exec("INSERT INTO USERS VALUES ('R003', 'U003', 'Cliente', 'Test', '11111', 'customer@test.com', '" . hash('sha256', 'customer123') . "', 1)");
         return true;
     } catch (Exception $e) {
         echo "Error al resetear la base de datos: " . $e->getMessage();
         return false;
     }
 }
+

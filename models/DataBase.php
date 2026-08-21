@@ -2,14 +2,13 @@
 class DataBase {
     # Conexión Local / Servidor
     public static function connection() {
-        $hostname = "localhost";
-        $port     = "3306";
-        $database = "db_inventory";
-        $username = "root";
-        
-        // Carga la clave desde variables de entorno para evitar credenciales hardcoded
-        // y resolver el fallo blocker php:S2115 de SonarQube
-        $password = "";
+        // Lee variables de entorno (definidas por phpunit.xml en entorno de pruebas);
+        // si no existen, usa los valores por defecto de producción.
+        $hostname = getenv('DB_HOST') ?: "localhost";
+        $port     = getenv('DB_PORT') ?: "3306";
+        $database = getenv('DB_NAME') ?: "db_inventory";
+        $username = getenv('DB_USER') ?: "root";
+        $password = getenv('DB_PASS') ?: "";
 
         try {
             $pdo = new PDO(
