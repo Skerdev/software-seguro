@@ -32,7 +32,7 @@ class UserTest extends TestCase
     {
         $user = new User();
         $this->expectException(InvalidArgumentException::class);
-        $user->setUserName('Rumpelstiltskin'); // 16 caracteres
+        $user->setUserName('Rumpelstiltskins'); // 16 caracteres (Rumpelstiltskin + "s")
     }
 
     public function testUserIncorrectNamePattern()
