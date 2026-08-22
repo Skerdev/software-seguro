@@ -33,10 +33,11 @@ abstract class TestCase extends BaseTestCase
     // Helper útil para crear un usuario de prueba rápido
     protected function createTestUser($rol = 'admin', $active = true)
     {
+        $rolCode = $rol === 'admin' ? 1 : ($rol === 'seller' ? 2 : 3);
         $user = new User();
-        $user->setRolCode($rol === 'admin' ? 'R001' : ($rol === 'seller' ? 'R002' : 'R003'));
+        $user->setRolCode($rolCode);
         $user->setRolName($rol);
-        $user->setUserCode('TEST' . rand(100, 999));
+        $user->setUserCode(rand(1000, 9999));
         $user->setUserName('Test');
         $user->setUserLastName('User');
         $user->setUserId('99999');
@@ -49,15 +50,16 @@ abstract class TestCase extends BaseTestCase
     // Helper útil para simular que un rol ha iniciado sesión
     protected function loginAs($rol = 'admin')
     {
+        $rolCode = $rol === 'admin' ? 1 : ($rol === 'seller' ? 2 : 3);
         $user = new User();
-        $user->setRolCode($rol === 'admin' ? 'R001' : ($rol === 'seller' ? 'R002' : 'R003'));
+        $user->setRolCode($rolCode);
         $user->setRolName($rol);
-        $user->setUserCode('U001');
+        $user->setUserCode(1);
         $user->setUserName('Test');
         $user->setUserLastName('User');
         $user->setUserId('12345');
         $user->setUserEmail($rol . '@test.com');
-        $user->setUserPass(sha1($rol . '123'));
+        $user->setUserPass(hash('sha256', $rol . '123'));
         $user->setUserState(1);
         $_SESSION['session'] = $rol;
         $_SESSION['profile'] = serialize($user);
