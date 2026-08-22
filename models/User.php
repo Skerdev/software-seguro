@@ -241,10 +241,12 @@ class User
     }
     public function setUserName($userName)
     {
+        $this->validateUserNameField($userName, 'El nombre');
         $this->userName = $userName;
     }
     public function setUserLastName($userLastname)
     {
+        $this->validateUserNameField($userLastname, 'El apellido');
         $this->userLastname = $userLastname;
     }
     public function setUserId($userId)
@@ -253,6 +255,10 @@ class User
     }
     public function setUserEmail($userEmail)
     {
+        // Validación de formato de correo (RF respaldo de TC03 - Matriz de Pruebas)
+        if (!filter_var($userEmail, FILTER_VALIDATE_EMAIL)) {
+            throw new InvalidArgumentException('Formato de correo electrónico inválido');
+        }
         $this->userEmail = $userEmail;
     }
     public function setUserPass($userPass)
@@ -262,6 +268,21 @@ class User
     public function setUserState($userState)
     {
         $this->userState = $userState;
+    }
+
+    /**
+     * Valida nombre/apellido de usuario (respaldo de TC04 y TC05 - Matriz de Pruebas):
+     * - Solo letras y espacios (rechaza números y caracteres especiales, ej. "Nadia_360", "Claus 12")
+     * - Longitud máxima de 15 caracteres (valor límite, ej. "Rumpelstiltskin" = 16 -> inválido)
+     */
+    private function validateUserNameField($value, $fieldLabel)
+    {
+        if (mb_strlen($value) > 15) {
+            throw new InvalidArgumentException("$fieldLabel excede el límite de 15 caracteres");
+        }
+        if (!preg_match('/^[\p{L} ]+$/u', $value)) {
+            throw new InvalidArgumentException("$fieldLabel contiene caracteres no permitidos (solo letras y espacios)");
+        }
     }
 
     # RF01_CU01 - Iniciar Sesión
