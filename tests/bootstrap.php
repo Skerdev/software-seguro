@@ -44,5 +44,8 @@ function resetTestDatabase() {
         echo "Error al resetear la base de datos: " . $e->getMessage();
         return false;
     }
+    // Sembrar datos base (roles + usuarios) UNA SOLA VEZ al arrancar el entorno
+    // de pruebas, sin importar qué testsuite o archivo individual se ejecute.
+    resetTestDatabase();
 }
 
