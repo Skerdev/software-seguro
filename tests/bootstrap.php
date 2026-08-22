@@ -12,6 +12,7 @@ define('DB_PASS', '');
 // Cargar las clases principales del proyecto
 require_once __DIR__ . '/../models/DataBase.php';
 require_once __DIR__ . '/../models/User.php';
+require_once __DIR__ . '/TestCase.php';
 
 // Iniciar sesión para las pruebas (simular)
 if (session_status() === PHP_SESSION_NONE) {
@@ -44,8 +45,11 @@ function resetTestDatabase() {
         echo "Error al resetear la base de datos: " . $e->getMessage();
         return false;
     }
-    // Sembrar datos base (roles + usuarios) UNA SOLA VEZ al arrancar el entorno
-    // de pruebas, sin importar qué testsuite o archivo individual se ejecute.
-    resetTestDatabase();
 }
 
+// Sembrar datos base (roles + usuarios) UNA SOLA VEZ al arrancar el entorno
+// de pruebas, sin importar qué testsuite o archivo individual se ejecute.
+// Así cualquier test (unitario, de integración, o un solo método puntual)
+// siempre encuentra los roles base ya creados, sin depender de que
+// ExampleTest::testResetDatabase() se ejecute primero.
+resetTestDatabase();
